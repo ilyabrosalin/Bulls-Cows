@@ -9,19 +9,39 @@ public class Main : MonoBehaviour
 {
     public Main()
     {
-        getRandomNumber();
-        int hiddenNumber = getRandomNumber();
-        Debug.Log(hiddenNumber);
+        hiddenNumber = GetRandomNumber();
     }
 
     public InputField inputField;
     public Button button;
     public Text output;
 
-    public int getRandomNumber()
+    public static string hiddenNumber;
+
+    public string GetRandomNumber()
     {
         System.Random rnd = new System.Random();
-        return rnd.Next(1000, 9999);
+        string result;
+        do
+        {
+            result = (rnd.Next(1000, 9999)).ToString();
+        }
+        while (!OnlyUniqueDigits(result));
+        return result;
+    }
+
+    public int SearchBulls(string hiddenNumber, string userNumber)
+    {
+        Debug.Log(hiddenNumber);
+        int bulls = 0;
+        for (int i = 0, n = 4; i < n; i++)
+        {
+            if (hiddenNumber[i] == userNumber[i])
+            {
+                bulls++;
+            }
+        }
+        return bulls;
     }
 
     static bool OnlyUniqueDigits(string number)
@@ -38,27 +58,28 @@ public class Main : MonoBehaviour
         }
         return true;
     }
-    public void onClick()
+    public void OnClick()
     {
-        string text = inputField.text;
-        var isNumeric = int.TryParse(text, out _);
-        var isUnique = OnlyUniqueDigits(text);
+        string userNumber = inputField.text;
+        var isNumeric = int.TryParse(userNumber, out _);
+        var isUnique = OnlyUniqueDigits(userNumber);
 
-        if (isNumeric && isUnique && text.Length==4)
+        if (isNumeric && isUnique && userNumber.Length==4)
         {
-            output.text += inputField.text + "\n";
+            int bulls = SearchBulls(hiddenNumber, userNumber);
+            output.text += inputField.text + ": " + bulls + " быков" + "\n";
         }
         else
         {
             if (!isUnique) Debug.Log("Цифры не должны повторяться");
-            if (!isNumeric || text.Length != 4) Debug.Log("Код - четырехзначное число");
+            if (!isNumeric || userNumber.Length != 4) Debug.Log("Код - четырехзначное число");
         }
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
