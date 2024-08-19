@@ -50,8 +50,8 @@ public class Main : MonoBehaviour
         }
         else
         {
-            if (!isUnique) Debug.Log("Цифры не должны повторяться");
-            if (!isNumeric || text.Length != 4) Debug.Log("Ход - четырехзначное число");
+            if (!isUnique) Debug.Log("Р¦РёС„СЂС‹ РЅРµ РґРѕР»Р¶РЅС‹ РїРѕРІС‚РѕСЂСЏС‚СЊСЃСЏ");
+            if (!isNumeric || text.Length != 4) Debug.Log("РљРѕРґ - С‡РµС‚С‹СЂРµС…Р·РЅР°С‡РЅРѕРµ С‡РёСЃР»Рѕ");
         }
     }
 
