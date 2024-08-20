@@ -12,8 +12,8 @@ public class Main : MonoBehaviour
         hiddenNumber = GetRandomNumber();
     }
 
-    public InputField inputField;
-    public Button button;
+    public GameObject inputField;
+    public GameObject button;
     public Text output;
 
     public static string hiddenNumber;
@@ -30,18 +30,35 @@ public class Main : MonoBehaviour
         return result;
     }
 
-    public int SearchBulls(string hiddenNumber, string userNumber)
+    public Tuple<int, int> SearchBulls(string hiddenNumber, string userNumber)
     {
         Debug.Log(hiddenNumber);
         int bulls = 0;
+        int cows = 0;
+        string valuesOfBulls = "";
         for (int i = 0, n = 4; i < n; i++)
         {
             if (hiddenNumber[i] == userNumber[i])
             {
                 bulls++;
+                valuesOfBulls += hiddenNumber[i];
             }
         }
-        return bulls;
+        Debug.Log("valuesOfBulls: " + valuesOfBulls);
+        for (int i = 0, n = valuesOfBulls.Length; i < n; i++)
+        {
+            hiddenNumber = hiddenNumber.Trim(new Char[] { valuesOfBulls[i] });
+            userNumber = userNumber.Trim(new Char[] { valuesOfBulls[i] });
+        }
+        for (int i = 0, n = hiddenNumber.Length; i < n; i++)
+        {
+            if (userNumber.Contains(hiddenNumber[i]))
+            {
+                cows++;
+                Debug.Log(cows);
+            }
+        }
+        return Tuple.Create(bulls,cows);
     }
 
     static bool OnlyUniqueDigits(string number)
@@ -60,31 +77,25 @@ public class Main : MonoBehaviour
     }
     public void OnClick()
     {
-        string userNumber = inputField.text;
+        string userNumber = inputField.GetComponent<InputField>().text;
         var isNumeric = int.TryParse(userNumber, out _);
         var isUnique = OnlyUniqueDigits(userNumber);
+        var tuple = (bulls: SearchBulls(hiddenNumber, userNumber).Item1, cows: SearchBulls(hiddenNumber, userNumber).Item2);
 
         if (isNumeric && isUnique && userNumber.Length==4)
         {
-            int bulls = SearchBulls(hiddenNumber, userNumber);
-            output.text += inputField.text + ": " + bulls + " быков" + "\n";
+            output.text += inputField.GetComponent<InputField>().text + ": " + tuple.bulls + " быков " + tuple.cows + " коров " + "\n";
+            if (tuple.bulls == 4)
+            {
+                output.text += " Мууу! Победа!";
+                button.SetActive(false);
+                inputField.SetActive(false);
+            }
         }
         else
         {
             if (!isUnique) Debug.Log("Цифры не должны повторяться");
             if (!isNumeric || userNumber.Length != 4) Debug.Log("Код - четырехзначное число");
         }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }
