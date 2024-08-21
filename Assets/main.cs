@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 public class Main : MonoBehaviour
@@ -13,8 +14,10 @@ public class Main : MonoBehaviour
     }
 
     public GameObject inputField;
-    public GameObject button;
+    public GameObject makeAMoveBtn;
+    public GameObject newGameBtn;
     public Text output;
+    public Text alert;
 
     public static string hiddenNumber;
 
@@ -24,15 +27,14 @@ public class Main : MonoBehaviour
         string result;
         do
         {
-            result = (rnd.Next(1000, 9999)).ToString();
+            result = (rnd.Next(1000, 9999)).ToString();//7543 - 6543
         }
         while (!OnlyUniqueDigits(result));
         return result;
     }
 
-    public Tuple<int, int> SearchBulls(string hiddenNumber, string userNumber)
+    public Tuple<int, int> SearchBullsAndCows(string hiddenNumber, string userNumber)
     {
-        Debug.Log(hiddenNumber);
         int bulls = 0;
         int cows = 0;
         string valuesOfBulls = "";
@@ -44,7 +46,6 @@ public class Main : MonoBehaviour
                 valuesOfBulls += hiddenNumber[i];
             }
         }
-        Debug.Log("valuesOfBulls: " + valuesOfBulls);
         for (int i = 0, n = valuesOfBulls.Length; i < n; i++)
         {
             hiddenNumber = hiddenNumber.Trim(new Char[] { valuesOfBulls[i] });
@@ -55,7 +56,6 @@ public class Main : MonoBehaviour
             if (userNumber.Contains(hiddenNumber[i]))
             {
                 cows++;
-                Debug.Log(cows);
             }
         }
         return Tuple.Create(bulls,cows);
@@ -75,27 +75,72 @@ public class Main : MonoBehaviour
         }
         return true;
     }
-    public void OnClick()
+
+    public void OnClickNewGameBtn()
     {
+        output.text = "";
+        makeAMoveBtn.SetActive(true);
+        inputField.SetActive(true);
+        newGameBtn.SetActive(false);
+    }
+
+    public void OnClickMakeAMoveBtn()
+    {
+        alert.text = "";
+        Debug.Log(hiddenNumber);
         string userNumber = inputField.GetComponent<InputField>().text;
         var isNumeric = int.TryParse(userNumber, out _);
         var isUnique = OnlyUniqueDigits(userNumber);
-        var tuple = (bulls: SearchBulls(hiddenNumber, userNumber).Item1, cows: SearchBulls(hiddenNumber, userNumber).Item2);
-
+        
         if (isNumeric && isUnique && userNumber.Length==4)
         {
-            output.text += inputField.GetComponent<InputField>().text + ": " + tuple.bulls + " быков " + tuple.cows + " коров " + "\n";
+            var tuple = (bulls: SearchBullsAndCows(hiddenNumber, userNumber).Item1, cows: SearchBullsAndCows(hiddenNumber, userNumber).Item2);
+            string bullsDesc = "";
+            string cowsDesc = "";
+            switch (tuple.bulls)
+            {
+                case 0:
+                    bullsDesc = " быков ";
+                    break;
+                case 1:
+                    bullsDesc = " бык ";
+                    break;
+                case 2 or 3 or 4:
+                    bullsDesc = " быка ";
+                    break;
+            }
+            switch (tuple.cows)
+            {
+                case 0:
+                    cowsDesc = " коров ";
+                    break;
+                case 1:
+                    cowsDesc = " корова ";
+                    break;
+                case 2 or 3 or 4:
+                    cowsDesc = " коровы ";
+                    break;
+            }
+            output.text += inputField.GetComponent<InputField>().text + ": " + tuple.bulls + bullsDesc + tuple.cows + cowsDesc + "\n";
+            inputField.GetComponent<InputField>().text = "";
             if (tuple.bulls == 4)
             {
                 output.text += " Мууу! Победа!";
-                button.SetActive(false);
+                makeAMoveBtn.SetActive(false);
                 inputField.SetActive(false);
+                newGameBtn.SetActive(true);
+                hiddenNumber = GetRandomNumber();
             }
         }
         else
         {
-            if (!isUnique) Debug.Log("Цифры не должны повторяться");
-            if (!isNumeric || userNumber.Length != 4) Debug.Log("Код - четырехзначное число");
+            if (!isUnique) alert.text = "Цифры не должны повторяться";
+            if (!isNumeric || userNumber.Length != 4) alert.text = "Код - четырехзначное число";
         }
+    }
+
+    public void GoToRules()
+    {
+        SceneManager.LoadScene("Rules");
     }
 }
