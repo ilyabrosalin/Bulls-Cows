@@ -82,10 +82,10 @@ public class Main : MonoBehaviour
         
         if (isNumeric && isUnique && userNumber.Length==4)
         {
-            var tuple = (bulls: SearchBullsAndCows(hiddenNumber, userNumber).Item1, cows: SearchBullsAndCows(hiddenNumber, userNumber).Item2);
+            (int bulls, int cows) = (SearchBullsAndCows(hiddenNumber, userNumber).Item1, SearchBullsAndCows(hiddenNumber, userNumber).Item2);
             string bullsDesc = "";
             string cowsDesc = "";
-            switch (tuple.bulls)
+            switch (bulls)
             {
                 case 0:
                     bullsDesc = " быков ";
@@ -97,7 +97,7 @@ public class Main : MonoBehaviour
                     bullsDesc = " быка ";
                     break;
             }
-            switch (tuple.cows)
+            switch (cows)
             {
                 case 0:
                     cowsDesc = " коров ";
@@ -109,9 +109,10 @@ public class Main : MonoBehaviour
                     cowsDesc = " коровы ";
                     break;
             }
-            output.text += inputField.GetComponent<InputField>().text + ": " + tuple.bulls + bullsDesc + tuple.cows + cowsDesc + "\n";
+            string outText = inputField.GetComponent<InputField>().text + ": " + bulls + bullsDesc + cows + cowsDesc + "\n";
+            output.text = output.text.Insert(0, outText);
             inputField.GetComponent<InputField>().text = "";
-            if (tuple.bulls == 4)
+            if (bulls == 4)
             {
                 output.text += " Мууу! Победа!";
                 makeAMoveBtn.SetActive(false);
