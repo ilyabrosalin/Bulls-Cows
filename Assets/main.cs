@@ -17,6 +17,7 @@ public class Main : MonoBehaviour
     public GameObject makeAMoveBtn;
     public GameObject newGameBtn;
     public Text output;
+    public Text strong;
     public Text alert;
 
     public static string hiddenNumber;
@@ -68,6 +69,9 @@ public class Main : MonoBehaviour
     public void OnClickNewGameBtn()
     {
         output.text = "";
+        strong.text = "";
+        alert.text = "";
+        alert.color = Color.black;
         makeAMoveBtn.SetActive(true);
         inputField.SetActive(true);
         newGameBtn.SetActive(false);
@@ -75,7 +79,9 @@ public class Main : MonoBehaviour
 
     public void OnClickMakeAMoveBtn()
     {
+        Debug.Log(hiddenNumber);
         alert.text = "";
+        alert.color = Color.black;
         string userNumber = inputField.GetComponent<InputField>().text;
         var isNumeric = int.TryParse(userNumber, out _);
         var isUnique = OnlyUniqueDigits(userNumber);
@@ -110,11 +116,16 @@ public class Main : MonoBehaviour
                     break;
             }
             string outText = inputField.GetComponent<InputField>().text + ": " + bulls + bullsDesc + cows + cowsDesc + "\n";
-            output.text = output.text.Insert(0, outText);
+            if (bulls + cows >= 3) 
+                strong.text = strong.text.Insert(0, outText);
+            else
+                output.text = output.text.Insert(0, outText);
+
             inputField.GetComponent<InputField>().text = "";
             if (bulls == 4)
             {
-                output.text += " Мууу! Победа!";
+                alert.text = "Мууу! Победа!";
+                alert.color = Color.green;
                 makeAMoveBtn.SetActive(false);
                 inputField.SetActive(false);
                 newGameBtn.SetActive(true);
@@ -123,6 +134,7 @@ public class Main : MonoBehaviour
         }
         else
         {
+            alert.color = Color.red;
             if (!isUnique) alert.text = "Цифры не должны повторяться";
             if (!isNumeric || userNumber.Length != 4) alert.text = "Код - четырехзначное число";
         }
