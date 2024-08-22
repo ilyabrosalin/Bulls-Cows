@@ -27,7 +27,7 @@ public class Main : MonoBehaviour
         string result;
         do
         {
-            result = (rnd.Next(1000, 9999)).ToString();//7543 - 6543
+            result = (rnd.Next(1000, 9999)).ToString();
         }
         while (!OnlyUniqueDigits(result));
         return result;
@@ -37,25 +37,14 @@ public class Main : MonoBehaviour
     {
         int bulls = 0;
         int cows = 0;
-        string valuesOfBulls = "";
-        for (int i = 0, n = 4; i < n; i++)
+        for (int i = 0; i < 4; i++)
         {
-            if (hiddenNumber[i] == userNumber[i])
+            if (hiddenNumber.Contains(userNumber[i]))
             {
-                bulls++;
-                valuesOfBulls += hiddenNumber[i];
-            }
-        }
-        for (int i = 0, n = valuesOfBulls.Length; i < n; i++)
-        {
-            hiddenNumber = hiddenNumber.Trim(new Char[] { valuesOfBulls[i] });
-            userNumber = userNumber.Trim(new Char[] { valuesOfBulls[i] });
-        }
-        for (int i = 0, n = hiddenNumber.Length; i < n; i++)
-        {
-            if (userNumber.Contains(hiddenNumber[i]))
-            {
-                cows++;
+                if (hiddenNumber[i] == userNumber[i])
+                    bulls++;
+                else
+                    cows++;
             }
         }
         return Tuple.Create(bulls,cows);
@@ -87,7 +76,6 @@ public class Main : MonoBehaviour
     public void OnClickMakeAMoveBtn()
     {
         alert.text = "";
-        Debug.Log(hiddenNumber);
         string userNumber = inputField.GetComponent<InputField>().text;
         var isNumeric = int.TryParse(userNumber, out _);
         var isUnique = OnlyUniqueDigits(userNumber);
